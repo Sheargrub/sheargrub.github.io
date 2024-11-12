@@ -33,6 +33,10 @@ h1 {
 	text-align:center;
 }
 
+#textbody {
+	width:500px;
+}
+
 #socialsbox {
 	display: flex;
 	flex-direction: row;
