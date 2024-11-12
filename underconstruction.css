@@ -5,6 +5,11 @@ body {
 	background-color: rgb(231, 238, 248);
 }
 
+h1 {
+	font-size:2.5em;
+	line-height:0.6;
+}
+
 #break {
 	height: 60px;
 }
@@ -32,9 +37,9 @@ body {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-end;
 	width: 600px;
-	height: 80px;
+	height: 70px;
 	margin: auto;
 }
 
@@ -44,7 +49,15 @@ body {
 	height: 40px;
 }
 
-h1 {
-	font-size:2.5em;
-	line-height:0.6;
+#smallnotice {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: flex-start;
+	width: 190px;
+	height: 10px;
+	margin: auto;
+	color: rgb(162, 203, 252);
+	font-family: "Anek Devanagari", Helvetica, sans-serif;
+	text-align: center;
 }
