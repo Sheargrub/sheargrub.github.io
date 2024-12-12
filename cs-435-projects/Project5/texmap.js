@@ -328,11 +328,11 @@ window.onload = function init() {
 
     pauseButton.onclick = function(){
         if (tvPaused) {
-            pauseButton.getContext("text") = "Pause"
+            pauseButton.textContent = "Pause"
             elemVideo.play();
             tvPaused = false;
         } else {
-            pauseButton.getContext("text") = "Play"
+            pauseButton.textContent = "Play"
             elemVideo.pause();
             tvPaused = true;
         }
