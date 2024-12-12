@@ -7,23 +7,6 @@
     canvas { background: blue; }
 </style>
 
-<br>
-
-<button id = "ButtonPower">Power On</button>
-<button id = "ButtonPause">-</button>
-<button id = "ButtonBack">-</button>
-<button id = "ButtonForward">-</button>
-<button id = "ButtonY">Rotate Y</button>
-<button id = "ButtonX">Rotate X</button>
-<button id = "ButtonY">Rotate Y</button>
-<button id = "ButtonZ">Rotate Z</button>
-<button id = "ButtonT">Toggle Rotatation</button>
-
-<br>
-
-<button id = "ButtonProj6">Open Project 6</button>
-<button id = "ButtonProj7">Open Project 7</button>
-
 <script id="vertex-shader" type="x-shader/x-vertex">
 #version 300 es
 
@@ -93,9 +76,26 @@ main()
 
 
 <body>
-<canvas id="gl-canvas" width="1024" height="1024">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-<img id = "texImage" src = "TIGER.png" hidden></img>
+
+    <button id = "ButtonPower">Power On</button>
+    <button id = "ButtonPause">-</button>
+    <button id = "ButtonBack">-</button>
+    <button id = "ButtonForward">-</button>
+
+    <br>
+    
+    <canvas id="gl-canvas" width="1024" height="1024">
+    Oops, your browser doesn't support the HTML5 canvas element!
+    </canvas>
+
+    <br>
+
+    <button id = "ButtonProj5">Open Project 5</button>
+    <button id = "ButtonProj6">Open Project 6</button>
+    <button id = "ButtonProj7">Open Project 7</button>
+
+    <img id = "texImage" src = "TIGER.png" hidden></img>
+    <video id = "tvVideo" src = "../video/mp4" hidden></video>
+
 </body>
 </html>
