@@ -509,7 +509,7 @@ window.onload = function init() {
     // Init objects
     tvScreen = new PlaneObj(0, 1, 0, 3.2, 1, 1.8, texVideo); 
     tvScreen.init();
-    table = new TableObj(0, -3, 0, 1, 1, 1, texWood);
+    table = new TableObj(0, 0, 0, 1, 1, 1, texWood);
     table.init();
 
     render();
