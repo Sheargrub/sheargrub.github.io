@@ -24,10 +24,10 @@ var elemVideo;
 
 var texture;
 
-var powerButton = document.getElementById("ButtonPower");
-var pauseButton = document.getElementById("ButtonPower");
-var backButton = document.getElementById("BackButton");
-var forwardButton = document.getElementById("ForwardButton");
+var powerButton;
+var pauseButton;
+var backButton;
+var forwardButton;
 
 
 var texCoord = [
@@ -315,6 +315,12 @@ window.onload = function init() {
     texVideo = initVideoTexture(elemVideo);
 
     thetaLoc = gl.getUniformLocation(program, "uTheta");
+
+    // Initialize buttons
+    powerButton = document.getElementById("ButtonPower");
+    pauseButton = document.getElementById("ButtonPower");
+    backButton = document.getElementById("BackButton");
+    forwardButton = document.getElementById("ForwardButton");
 
     powerButton.onclick = function(){
         if (tvOn) {
