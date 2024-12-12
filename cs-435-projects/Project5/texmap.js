@@ -29,7 +29,6 @@ var pauseButton;
 var backButton;
 var forwardButton;
 
-
 var texCoord = [
     vec2(0, 0),
     vec2(0, 1),
@@ -69,7 +68,7 @@ var thetaLoc;
 
 class RectPrismObj {
 
-    constructor(x, y, z, sx, sy, sz) {
+    constructor(x, y, z, sx, sy, sz, tex) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -82,6 +81,9 @@ class RectPrismObj {
 
         this.positionsArray = [];
         this.normalsArray = [];
+        this.texCoordsArray = [];
+
+        this.texture = tex;
     }
 
     quad(a, b, c, d) {
@@ -92,16 +94,22 @@ class RectPrismObj {
 
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[b]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[1]);
         this.positionsArray.push(vertices[c]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[c]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
         this.positionsArray.push(vertices[d]);
         this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[3]);
     }
 
     init() {
@@ -117,6 +125,83 @@ class RectPrismObj {
     }
 
     draw(inModelView) {
+        bindTexture(this.texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.nBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normalsArray), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(normalLoc);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(positionLoc);
+
+        var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
+        var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
+        gl.uniformMatrix4fv(gl.getUniformLocation(program,
+            "uModelViewMatrix"), false, flatten(localModelView));
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.numPositions);
+    }
+
+}
+
+class PlaneObj {
+
+    constructor(x, y, z, sx, sy, sz, tex) {
+        this.x = x;
+        this.y = y;
+        this.z = z-0.5;
+
+        this.sx = sx;
+        this.sy = sy;
+        this.sz = sz;
+
+        this.numPositions = 36;
+
+        this.positionsArray = [];
+        this.normalsArray = [];
+        this.texCoordsArray = [];
+
+        this.texture = tex;
+    }
+
+    quad(a, b, c, d) {
+        var t1 = subtract(vertices[b], vertices[a]);
+        var t2 = subtract(vertices[c], vertices[b]);
+        var normal = cross(t1, t2);
+        normal = vec3(normal);
+
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[b]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[1]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[d]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[3]);
+    }
+
+    init() {
+        this.quad(1, 0, 3, 2);
+        this.nBuffer = gl.createBuffer();
+        this.vBuffer = gl.createBuffer();
+    }
+
+    draw(inModelView) {
+        bindTexture(this.texture);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, this.nBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normalsArray), gl.STATIC_DRAW);
         gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
@@ -259,6 +344,12 @@ function colorCube()
 }
 
 
+
+var walls;
+var floor;
+var tvBody;
+var tvScreen;
+
 window.onload = function init() {
 
     canvas = document.getElementById("gl-canvas");
@@ -358,6 +449,10 @@ window.onload = function init() {
     document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project6/blending.html","_self");};
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
+    // Init objects
+    tvScreen = new PlaneObj(0, 0, 0, 3.2, 1.8, 1, texVideo); 
+    tvScreen.init();
+
     render();
 
 }
@@ -372,7 +467,10 @@ var render = function() {
     }
     bindTexture(texVideo)
 
+    tvScreen.render();
+    /*
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays(gl.TRIANGLES, 0, numPositions);
+    */
     requestAnimationFrame(render);
 }
