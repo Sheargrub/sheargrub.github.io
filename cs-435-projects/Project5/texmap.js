@@ -318,10 +318,10 @@ window.onload = function init() {
 
     powerButton.onclick = function(){
         if (tvOn) {
-            powerButton.getContext("text") = "Power On"
+            powerButton.textContent = "Power On"
             tvOn = false;
         } else {
-            powerButton.getContext("text") = "Power Off"
+            powerButton.textContent = "Power Off"
             tvOn = true;
         }
     }
