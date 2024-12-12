@@ -24,6 +24,12 @@ var elemVideo;
 
 var texture;
 
+var powerButton = document.getElementById("ButtonPower");
+var pauseButton = document.getElementById("ButtonPower");
+var backButton = document.getElementById("BackButton");
+var forwardButton = document.getElementById("ForwardButton");
+
+
 var texCoord = [
     vec2(0, 0),
     vec2(0, 1),
@@ -151,7 +157,7 @@ function bindTexture( texture ) {
 }
 
 var copyVideo = false;
-var tvOn = true;
+var tvOn = false;
 var tvPaused = false;
 
 function initVideo( video ) {
@@ -309,6 +315,28 @@ window.onload = function init() {
     texVideo = initVideoTexture(elemVideo);
 
     thetaLoc = gl.getUniformLocation(program, "uTheta");
+
+    powerButton.onclick = function(){
+        if (tvOn) {
+            powerButton.getContext("text") = "Power On"
+            tvOn = false;
+        } else {
+            powerButton.getContext("text") = "Power Off"
+            tvOn = true;
+        }
+    }
+
+    pauseButton.onclick = function(){
+        if (tvPaused) {
+            pauseButton.getContext("text") = "Pause"
+            elemVideo.play();
+            tvPaused = false;
+        } else {
+            pauseButton.getContext("text") = "Play"
+            elemVideo.pause();
+            tvPaused = true;
+        }
+    }
 
     document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project5/texmap.html","_self");};
     document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project6/blending.html","_self");};
