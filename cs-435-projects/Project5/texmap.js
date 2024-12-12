@@ -1,5 +1,11 @@
 "use strict";
 
+/*
+    CS 435, Project 5
+    Ian Minor
+    WebGL application that displays a textured room.
+*/
+
 var canvas;
 var gl;
 
@@ -170,6 +176,9 @@ window.onload = function init() {
     document.getElementById("ButtonY").onclick = function(){axis = yAxis;};
     document.getElementById("ButtonZ").onclick = function(){axis = zAxis;};
     document.getElementById("ButtonT").onclick = function(){flag = !flag;};
+
+    document.getElementById("ButtonProj6").onclick = function(){window.open("http://www.sheargrub.com/435-Projects/Project6/blending.html","_self");};
+    document.getElementById("ButtonProj7").onclick = function(){window.open("http://www.sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     render();
 
