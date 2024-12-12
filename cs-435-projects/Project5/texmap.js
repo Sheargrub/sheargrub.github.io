@@ -529,7 +529,7 @@ var render = function() {
     var mvm = rotate(Math.PI/4, vec3(0, 1, 0))
 
     tvScreen.draw(mvm);
-    //table.draw(mvm);
+    table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays(gl.TRIANGLES, 0, numPositions);

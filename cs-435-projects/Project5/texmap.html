@@ -45,7 +45,7 @@ void main()
 
     vColor = aColor;
     vTexCoord = aTexCoord;
-    gl_Position = rz * ry * rx * aPosition;
+    gl_Position = uModelViewMatrix * aPosition;
     gl_Position.z = -gl_Position.z;
 }
 </script>
