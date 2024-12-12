@@ -507,7 +507,7 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 1, 0, 3.2, 1, 1.8, texVideo); 
+    tvScreen = new PlaneObj(0, 0, 10, 3.2, 1, 1.8, texVideo); 
     tvScreen.init();
     table = new TableObj(0, 0, 0, 1, 1, 1, texWood);
     table.init();
@@ -528,7 +528,7 @@ var render = function() {
 
     var mvm = rotate(Math.PI/4, vec3(0, 1, 0))
 
-    //tvScreen.draw(mvm);
+    tvScreen.draw(mvm);
     table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
