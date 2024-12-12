@@ -178,7 +178,6 @@ function initVideo( video ) {
         true,
     );
 
-    video.src = url;
     video.play();
 
     function checkReady() {
