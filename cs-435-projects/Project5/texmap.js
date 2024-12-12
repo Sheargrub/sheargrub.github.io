@@ -162,7 +162,7 @@ class PlaneObj {
         this.sy = sy;
         this.sz = sz;
 
-        this.numPositions = 36;
+        this.numPositions = 6;
 
         this.positionsArray = [];
         this.normalsArray = [];
