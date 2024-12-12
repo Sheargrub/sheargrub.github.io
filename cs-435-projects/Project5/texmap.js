@@ -19,8 +19,17 @@ var colorsArray = [];
 var texCoordsArray = [];
 
 var texTest;
+var texWood;
+var texPlastic;
+var texCarpet;
+var texBrick;
 var texVideo;
 var elemVideo;
+
+var walls;
+var floor;
+var tvBody;
+var tvScreen;
 
 var texture;
 
@@ -228,6 +237,45 @@ class PlaneObj {
 
 }
 
+class TableObj {
+
+    constructor(x, y, z, sx, sy, sz, tex) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.sx = sx;
+        this.sy = sy;
+        this.sz = sz;
+
+        this.prisms = [];
+
+        this.texture = tex;
+    }
+
+    init() {
+        this.prisms.push(new RectPrismObj(x, y+0.25, z, 2, 0.5, 2, tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.5, 1, 0.5, tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.5, 1, 0.5, tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.5, 1, 0.5, tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.5, 1, 0.5, tex));
+
+        for (var i = 0; i <= 4; i++) {
+            this.prisms[i].init();
+        }
+    }
+
+    draw(inModelView) {
+        var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
+        var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
+
+        for (var i = 0; i <= 4; i++) {
+            this.prisms[i].draw(localModelView);
+        }
+    }
+
+}
+
 function initTexture( image ) {
     texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -349,13 +397,6 @@ function colorCube()
     quad(5, 4, 0, 1);
 }
 
-
-
-var walls;
-var floor;
-var tvBody;
-var tvScreen;
-
 window.onload = function init() {
 
     canvas = document.getElementById("gl-canvas");
@@ -404,9 +445,14 @@ window.onload = function init() {
     // Initialize a texture
     //
 
-
-    var image = document.getElementById("texImage");
-    texTest = initTexture(image);
+    var wood = document.getElementById("texWood");
+    texWood = initTexture(wood);
+    var plastic = document.getElementById("texPlastic");
+    texPlastic = initTexture(plastic);
+    var carpet = document.getElementById("texCarpet");
+    texCarpet = initTexture(carpet);
+    var brick = document.getElementById("texBrick");
+    texBrick = initTexture(brick);
 
     elemVideo = initVideo(document.getElementById("texVideo"));
     texVideo = initVideoTexture(elemVideo);
@@ -458,6 +504,8 @@ window.onload = function init() {
     // Init objects
     tvScreen = new PlaneObj(0, 1, 0, 3.2, 1, 1.8, texVideo); 
     tvScreen.init();
+    table = new TableObj(0, -3, 0, 1, 1, 1, texWood);
+    table.init();
 
     render();
 
@@ -473,7 +521,10 @@ var render = function() {
     }
     bindTexture(texVideo)
 
-    tvScreen.draw(rotate(0, vec3(0, 1, 0)));
+    var mvm = rotate(0, vec3(0, 1, 0))
+
+    tvScreen.draw(mvm);
+    table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays(gl.TRIANGLES, 0, numPositions);
