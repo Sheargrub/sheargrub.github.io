@@ -344,6 +344,16 @@ window.onload = function init() {
         }
     }
 
+    backButton.onclick = function(){
+        if (elemVideo.currentTime < 1) elemVideo.currentTime = elemVideo.duration;
+        elemVideo.currentTime -= 1;
+    };
+    
+    forwardButton.onclick = function(){
+        elemVideo.currentTime += 1;
+        if (elemVideo.currentTime >= elemVideo.duration) elemVideo.currentTime -= elemVideo.duration;
+    };
+
     document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project5/texmap.html","_self");};
     document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project6/blending.html","_self");};
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
