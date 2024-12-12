@@ -257,11 +257,12 @@ class TableObj {
     }
 
     init() {
-        this.prisms.push(new RectPrismObj(x, y+0.25, z, 2, 0.5, 2, tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.5, 1, 0.5, tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.5, 1, 0.5, tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.5, 1, 0.5, tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.5, 1, 0.5, tex));
+        var x = this.x; var y = this.y; var z = this.z;
+        this.prisms.push(new RectPrismObj(x, y+0.25, z, 2, 0.5, 2, this.tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.5, 1, 0.5, this.tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.5, 1, 0.5, this.tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.5, 1, 0.5, this.tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.5, 1, 0.5, this.tex));
 
         for (var i = 0; i <= 4; i++) {
             this.prisms[i].init();
