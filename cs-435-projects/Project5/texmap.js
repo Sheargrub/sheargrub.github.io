@@ -177,8 +177,8 @@ window.onload = function init() {
     document.getElementById("ButtonZ").onclick = function(){axis = zAxis;};
     document.getElementById("ButtonT").onclick = function(){flag = !flag;};
 
-    document.getElementById("ButtonProj6").onclick = function(){window.open("http://www.sheargrub.com/435-Projects/Project6/blending.html","_self");};
-    document.getElementById("ButtonProj7").onclick = function(){window.open("http://www.sheargrub.com/435-Projects/Project7/proj7.html","_self");};
+    document.getElementById("ButtonProj6").onclick = function(){window.open("https://www.sheargrub.com/435-Projects/Project6/blending.html","_self");};
+    document.getElementById("ButtonProj7").onclick = function(){window.open("https://www.sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     render();
 
