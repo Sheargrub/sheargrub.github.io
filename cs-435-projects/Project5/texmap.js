@@ -467,7 +467,7 @@ var render = function() {
     }
     bindTexture(texVideo)
 
-    tvScreen.render();
+    tvScreen.draw(rotate(0, vec3(0, 1, 0)));
     /*
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays(gl.TRIANGLES, 0, numPositions);
