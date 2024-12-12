@@ -20,6 +20,7 @@ var texCoordsArray = [];
 
 var texTest;
 var texVideo;
+var elemVideo;
 
 var texture;
 
@@ -304,8 +305,8 @@ window.onload = function init() {
     var image = document.getElementById("texImage");
     texTest = initTexture(image);
 
-    var video = initVideo(document.getElementById("texVideo"));
-    texVideo = initVideoTexture(video);
+    elemVideo = initVideo(document.getElementById("texVideo"));
+    texVideo = initVideoTexture(elemVideo);
 
     thetaLoc = gl.getUniformLocation(program, "uTheta");
 
@@ -322,7 +323,7 @@ var render = function() {
     if(flag) theta[axis] += 2.0;
 
     if (copyVideo) {
-        if (tvOn) updateVideoTexture(gl, texVideo, video);
+        if (tvOn) updateVideoTexture(gl, texVideo, elemVideo);
         else disableVideoTexture(gl, texVideo);
     }
     bindTexture(texVideo)
