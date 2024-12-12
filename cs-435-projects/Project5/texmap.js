@@ -305,7 +305,7 @@ window.onload = function init() {
     var image = document.getElementById("texImage");
     texTest = initTexture(image);
 
-    var video = initVideo(document.getElementById("video"));
+    var video = initVideo(document.getElementById("texVideo"));
     texVideo = initVideoTexture(video);
 
     thetaLoc = gl.getUniformLocation(program, "uTheta");
