@@ -26,10 +26,13 @@ var texBrick;
 var texVideo;
 var elemVideo;
 
-var walls;
+var wallL;
+var wallB;
+var wallR;
 var floor;
 var tvBody;
 var tvScreen;
+var table;
 
 var texture;
 
