@@ -309,11 +309,6 @@ window.onload = function init() {
 
     thetaLoc = gl.getUniformLocation(program, "uTheta");
 
-    document.getElementById("ButtonX").onclick = function(){axis = xAxis;};
-    document.getElementById("ButtonY").onclick = function(){axis = yAxis;};
-    document.getElementById("ButtonZ").onclick = function(){axis = zAxis;};
-    document.getElementById("ButtonT").onclick = function(){flag = !flag;};
-
     document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project5/texmap.html","_self");};
     document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project6/blending.html","_self");};
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
