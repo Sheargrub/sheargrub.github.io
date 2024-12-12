@@ -167,8 +167,8 @@ class PlaneObj {
 
     constructor(x, y, z, sx, sy, sz, tex) {
         this.x = x;
-        this.y = y-0.5;
-        this.z = z;
+        this.y = y;
+        this.z = z-0.5;
 
         this.sx = sx;
         this.sy = sy;
@@ -507,9 +507,9 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, -1, 1.6, 0.9, 1, texVideo); 
+    tvScreen = new PlaneObj(0, 0, -2, 1.6, 0.9, 1, texVideo); 
     tvScreen.init();
-    table = new TableObj(0, -3, -2, 0.5, 0.5, 0.5, texWood);
+    table = new TableObj(0, -3, -6, 0.5, 0.5, 0.5, texWood);
     table.init();
 
     render();
