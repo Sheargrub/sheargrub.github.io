@@ -319,8 +319,8 @@ window.onload = function init() {
     // Initialize buttons
     powerButton = document.getElementById("ButtonPower");
     pauseButton = document.getElementById("ButtonPause");
-    backButton = document.getElementById("BackButton");
-    forwardButton = document.getElementById("ForwardButton");
+    backButton = document.getElementById("ButtonBack");
+    forwardButton = document.getElementById("ButtonForward");
 
     powerButton.onclick = function(){
         if (tvOn) {
@@ -348,7 +348,7 @@ window.onload = function init() {
         if (elemVideo.currentTime < 1) elemVideo.currentTime = elemVideo.duration;
         elemVideo.currentTime -= 1;
     };
-    
+
     forwardButton.onclick = function(){
         elemVideo.currentTime += 1;
         if (elemVideo.currentTime >= elemVideo.duration) elemVideo.currentTime -= elemVideo.duration;
