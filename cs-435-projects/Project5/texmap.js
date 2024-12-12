@@ -258,11 +258,11 @@ class TableObj {
 
     init() {
         var x = this.x; var y = this.y; var z = this.z;
-        this.prisms.push(new RectPrismObj(x, y+0.25, z, 2, 0.5, 2, this.tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.5, 1, 0.5, this.tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.5, 1, 0.5, this.tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.5, 1, 0.5, this.tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.5, 1, 0.5, this.tex));
+        this.prisms.push(new RectPrismObj(x, y+0.15, z, 2, 0.3, 2, this.tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.tex));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.tex));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.tex));
 
         for (var i = 0; i <= 4; i++) {
             this.prisms[i].init();
@@ -526,7 +526,7 @@ var render = function() {
     }
     bindTexture(texVideo)
 
-    var mvm = rotate(Math.PI/4, vec3(0, 1, 0))
+    var mvm = rotate(0, vec3(0, 1, 0))
 
     tvScreen.draw(mvm);
     table.draw(mvm);
