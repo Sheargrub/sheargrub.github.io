@@ -526,7 +526,7 @@ var render = function() {
     }
     bindTexture(texVideo)
 
-    var mvm = rotate(0, vec3(0, 1, 0))
+    var mvm = rotate(Math.PI/4, vec3(0, 1, 0))
 
     //tvScreen.draw(mvm);
     table.draw(mvm);
