@@ -243,12 +243,12 @@ class CupObj {
         bindTexture(this.texture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(0, numPositions1)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(0, this.numPositions1)), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(0, numPositions1)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(0, this.numPositions1)), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
@@ -262,12 +262,12 @@ class CupObj {
         bindTexture(this.texture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(numPositions1, numPositions2)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(this.numPositions1, this.numPositions2)), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(numPositions1, numPositions2)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(this.numPositions1, this.numPositions2)), gl.STATIC_DRAW);
 
         gl.uniformMatrix4fv(gl.getUniformLocation(program,
             "uModelViewMatrix"), false, flatten(localModelView));
