@@ -243,8 +243,6 @@ class CupObj {
     }
 
     draw(inModelView) {
-        if (!flag) return;
-
         bindTexture(this.texture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
@@ -432,6 +430,8 @@ class BallObj {
     }
 
     draw(inModelView) {
+        if (!flag) return;
+
         bindTexture(this.texture);
 
         /*
@@ -450,8 +450,8 @@ class BallObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
-        var localModelView = mult(localModelView, rotate((0, 1, 0), this.ry));
-        var localModelView = mult(localModelView, rotate((1, 0, 0), this.rx));
+        var localModelView = mult(localModelView, rotate(vec3(0, 1, 0), this.ry));
+        var localModelView = mult(localModelView, rotate(vec3(1, 0, 0), this.rx));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
         gl.uniformMatrix4fv(gl.getUniformLocation(program,
             "uModelViewMatrix"), false, flatten(localModelView));
