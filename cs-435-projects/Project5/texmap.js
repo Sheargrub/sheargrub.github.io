@@ -112,7 +112,7 @@ class RectPrismObj {
 
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
-        
+        this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[b]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[1]);
@@ -138,11 +138,7 @@ class RectPrismObj {
         this.quad(6, 5, 1, 2);
         this.quad(4, 5, 6, 7);
         this.quad(5, 4, 0, 1);
-
-        console.log(this.positionsArray.length)
-        console.log(this.texCoordsArray.length)
-        console.log(this.normalsArray.length)
-
+        
         this.nBuffer = gl.createBuffer();
         this.vBuffer = gl.createBuffer();
     }
