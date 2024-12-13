@@ -742,7 +742,7 @@ function update(delta_ms) {
             timerStart = Date.now();
             playerHit = false;
             playerVisible = true;
-            document.getElementById("alertfield").textContent = "[0s] Starting off simple.";
+            document.getElementById("alertfield").textContent = "[0s] Welcome back!";
         }
     }    
     
