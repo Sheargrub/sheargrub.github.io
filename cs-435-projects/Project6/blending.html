@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<title>Ian Minor ~ CS 435, Project #6</title>
+
+<style type="text/css">
+    canvas { background: blue; }
+</style>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+#version 300 es
+
+in vec4 aPosition;
+in vec2 aTexCoord;
+
+out vec2 vTexCoord;
+
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+void main()
+{
+    vTexCoord = aTexCoord;
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+#version 300 es
+
+precision mediump float;
+
+in vec2 vTexCoord;
+
+out vec4 fColor;
+
+uniform sampler2D uTextureMap;
+
+void
+main()
+{
+    fColor = texture(uTextureMap, vTexCoord);
+}
+</script>
+
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MVnew.js"></script>
+<script type="text/javascript" src="blending.js"></script>
+
+
+<body>
+
+    <button id = "ButtonBall">AddBall</button>
+    <button id = "ButtonPower">Power On</button>
+    <button id = "ButtonPause">Pause</button>
+    <button id = "ButtonBack">Back</button>
+    <button id = "ButtonForward">Forward</button>
+
+    <br>
+    
+    <canvas id="gl-canvas" width="512" height="512">
+    Oops, your browser doesn't support the HTML5 canvas element!
+    </canvas>
+
+    <br>
+
+    <button id = "ButtonProj5">Open Project 5</button>
+    <button id = "ButtonProj6">Open Project 6</button>
+    <button id = "ButtonProj7">Open Project 7</button>
+
+    <img id = "texWood" src = "../Textures/wood.jpg" hidden></img>
+    <img id = "texPlastic" src = "../Textures/plastic.png" hidden></img>
+    <img id = "texCarpet" src = "../Textures/carpet.jpg" hidden></img>
+    <img id = "texBrick" src = "../Textures/bricks.jpg" hidden></img>
+    <video id = "texVideo" src = "../Textures/video.mp4" hidden></video>
+
+</body>
+</html>
