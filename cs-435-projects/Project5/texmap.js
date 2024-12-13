@@ -138,7 +138,7 @@ class RectPrismObj {
         this.quad(6, 5, 1, 2);
         this.quad(4, 5, 6, 7);
         this.quad(5, 4, 0, 1);
-        
+
         this.nBuffer = gl.createBuffer();
         this.vBuffer = gl.createBuffer();
     }
@@ -530,8 +530,10 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 1, 2, 0.8, 0.45, 1, texVideo); 
+    tvScreen = new PlaneObj(-0., 0, 2.5, 0.8, 0.45, 1, texVideo); 
     tvScreen.init();
+    tvBody = new RectPrismObj(0, 0, 3.3, 0.9, 0.55, 0.3, texPlastic);
+    tvBody.init();
     table = new TableObj(0, -1, 2, 1, 1, 1, texWood);
     table.init();
 
@@ -551,6 +553,7 @@ var render = function() {
     var mvm = modelViewMatrix;
 
     tvScreen.draw(mvm);
+    tvBody.draw(mvm);
     table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
