@@ -25,6 +25,7 @@ var hurtboxInner;
 var followLine;
 
 var bulletRings;
+var ringFactories;
 
 // state information
 var mouseInField = false;
@@ -36,12 +37,31 @@ var focusPressed = false;
 var focusHeld = false;
 
 var playerHit = false;
+var timerStart = 0;
+var phase = 0;
 
 const FRAMETIME_MS = 16.7;
 
 const MAX_PLAYER_SPEED = 1200 * FRAMETIME_MS/1000;
 const MAX_FOCUS_SPEED = 300 * FRAMETIME_MS/1000;
 const HURTBOX_RADIUS = 4
+
+const PHASE_TIMINGS = [5, 15, 30, 40, 50, 60, 120];
+const PHASE_TEXT = [
+    "Welcome aboard!",
+    "Starting off simple.",
+    "Speed up!",
+    "Variance up!",
+    "Density up!",
+    "Frequency up!",
+    "Here's where the real game begins~",
+]
+const BEHAVIOR_TEXT = [
+    "Speed",
+    "Variance",
+    "Density",
+    "Frequency"
+]
 
 class Block {
     constructor(color, parentX, parentY, bx, by, bWidth, idx) {
@@ -233,6 +253,7 @@ class BulletRing {
             angle += 2.0*Math.PI/density;
         }
 
+        this.max_radius = Math.max(y, canvas.height - y) + bulletRadius;
     }
 
     init() {
@@ -268,6 +289,10 @@ class BulletRing {
         }
     }
 
+    isCleanable() {
+        return this.radius >= this.max_radius;
+    }
+
     draw() {
         for (var i = 0; i < this.density; i++) {
             this.bullets[i].draw();
@@ -277,6 +302,37 @@ class BulletRing {
 }
 
 class RingFactory {
+
+    constructor(color, x, y, variance, speed, density, bulletRadius, period) {
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.variance = variance;
+        this.density = density;
+        this.speed = speed;
+        this.bulletRadius = bulletRadius;
+        this.period = period;
+        this.timer = 0;
+    }
+
+    timerTriggered(delta_ms) {
+        this.timer += delta_ms / 1000.0;
+        if (this.timer > this.period) {
+            this.timer -= this.period;
+            return true;
+        }
+        return false;
+    }
+
+    spawnBulletRing() {
+        var angle = Math.random() * 2 * Math.PI;
+        var dist = Math.random() * this.variance;
+        var x = this.x + dist*Math.cos(angle);
+        var y = this.y + dist*Math.sin(angle);
+        var offset = Math.random() * 2 * Math.PI / this.density;
+
+        return new BulletRing(this.color, x, y, this.density, offset, this.speed, this.bulletRadius);
+    }
 
 }
 
@@ -532,10 +588,37 @@ window.onload = function initialize() {
     followLine = new Line(vec4(1.0, 0.7, 0.9, 1.0), canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
     followLine.init();
 
-    bulletRings = [new BulletRing(vec4(0.8, 0.2, 0.3, 1.0), 250, 500, 10, 0, 60, 12)]
-    bulletRings[0].init();
+    bulletRings = [];
+    ringFactories = [];
+
+    timerStart = Date.now();
 
     setInterval(function () {update(FRAMETIME_MS)}, FRAMETIME_MS);
+}
+
+function buffRings(type) {
+    switch (type) {
+        case 0:
+            for (var i = 0; i < ringFactories.length; i++) {
+                ringFactories[i].speed += 30;
+            }
+            break;
+        case 1:
+            for (var i = 0; i < ringFactories.length; i++) {
+                ringFactories[i].variance += 8;
+            }
+            break;
+        case 2:
+            for (var i = 0; i < ringFactories.length; i++) {
+                ringFactories[i].density += 2;
+            }
+            break;
+        case 3:
+            for (var i = 0; i < ringFactories.length; i++) {
+                ringFactories[i].period *= 0.85;
+            }
+            break;
+    }
 }
 
 function update(delta_ms) {
@@ -564,12 +647,56 @@ function update(delta_ms) {
         }
     }
 
+    for (var i = 0; i < ringFactories.length; i++) {
+        if (ringFactories[i].timerTriggered(delta_ms)) {
+            var br = ringFactories[i].spawnBulletRing();
+            br.init();
+            bulletRings.push(br);
+        }
+    }
+
     for (var i = 0; i < bulletRings.length; i++) {
         bulletRings[i].update(delta_ms);
+        if (bulletRings[i].isCleanable()) {
+            bulletRings.splice(i, 1);
+            i--;
+        }
     }
 
     clickPressed = false;
     focusPressed = false;
+
+    var timerNow = Math.round((Date.now() - timerStart)/1000);
+    var timerString = "Current time: " + timerNow.toString() + " seconds";
+    document.getElementById("timerfield").textContent = timerString;
+
+    if (timerNow < 65) {
+        if (timerNow >= PHASE_TIMINGS[phase]) {
+            phase++;
+            document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + PHASE_TEXT[phase];
+
+            // Primary rings
+            if (phase == 1) {
+                ringFactories.push(new RingFactory(vec4(0.8, 0.2, 0.3, 1.0), 250, 600, 50, 100, 10, 12, 0.7));
+            }
+
+            // Secondary rings
+            else if (phase == 6) {
+                ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 100, 680, 60, 100, 8, 12, 0.9));
+                ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 400, 680, 60, 100, 8, 12, 0.9));
+            }
+
+            else {
+                buffRings(phase-2);
+            }
+
+        }
+    } else if (timerNow/10 >= phase+1) {
+        phase++;
+        var behavior = Math.floor(Math.random()*4);
+        document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + BEHAVIOR_TEXT[behavior] + " up!";
+        buffRings(behavior);
+    }
 
     render();
 }
