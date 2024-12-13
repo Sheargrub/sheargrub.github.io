@@ -186,7 +186,7 @@ class CupObj {
         this.sy = sy;
         this.sz = sz;
 
-        this.numPositions1 = 15;
+        this.numPositions1 = 18;
         this.numPositions2 = 12;
 
         this.positionsArray = [];
