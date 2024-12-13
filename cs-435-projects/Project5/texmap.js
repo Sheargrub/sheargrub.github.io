@@ -276,11 +276,11 @@ class TableObj {
 
     init() {
         var x = this.x; var y = this.y; var z = this.z;
-        this.prisms.push(new RectPrismObj(x, y+0.15, z, 2, 0.3, 2, this.tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.tex));
-        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.tex));
-        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.tex));
+        this.prisms.push(new RectPrismObj(x, y+0.15, z, 2, 0.3, 2, this.texture));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.texture));
+        this.prisms.push(new RectPrismObj(x+0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.texture));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z-0.75, 0.3, 1, 0.3, this.texture));
+        this.prisms.push(new RectPrismObj(x-0.75, y-0.5, z+0.75, 0.3, 1, 0.3, this.texture));
 
         for (var i = 0; i <= 4; i++) {
             this.prisms[i].init();
@@ -534,7 +534,7 @@ window.onload = function init() {
     tvScreen.init();
     tvBody = new RectPrismObj(0, 0, 3, 1.3, 0.8, 0.3, texPlastic);
     tvBody.init();
-    table = new TableObj(0, -0.3, 2, 1, 1, 1, texPlastic);
+    table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
     table.init();
 
     render();
