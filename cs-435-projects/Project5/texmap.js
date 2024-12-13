@@ -537,13 +537,13 @@ window.onload = function init() {
     table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
     table.init();
 
-    floor = new RectPrismObj(0, -1, 3.5, 1.5, 0.1, 1.5, texCarpet);
+    floor = new RectPrismObj(0, -2, 3.5, 4, 0.1, 4, texCarpet);
     floor.init();
-    wallL = new RectPrismObj(-3.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
+    wallL = new RectPrismObj(-2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallL.init();
-    wallB = new RectPrismObj(0, 0.5, 4.25, 1.5, 1.5, 0.1, texBrick);
+    wallB = new RectPrismObj(0, 0, 5.5, 4, 4, 0.1, texBrick);
     wallB.init();
-    wallR = new RectPrismObj(3.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
+    wallR = new RectPrismObj(2, 0, 3.5, 4, 4, 1.5, texBrick);
     wallR.init();
 
     render();
