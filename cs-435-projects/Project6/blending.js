@@ -450,8 +450,8 @@ class BallObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
-        var localModelView = mult(localModelView, rotate(vec3(0, 1, 0), this.ry));
-        var localModelView = mult(localModelView, rotate(vec3(1, 0, 0), this.rx));
+        var localModelView = mult(localModelView, rotate(this.ry, vec3(0, 1, 0)));
+        var localModelView = mult(localModelView, rotate(this.rx, vec3(1, 0, 0)));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
         gl.uniformMatrix4fv(gl.getUniformLocation(program,
             "uModelViewMatrix"), false, flatten(localModelView));
@@ -735,10 +735,10 @@ window.onload = function init() {
 
     ballButton.onclick = function(){
         if (flag) {
-            pauseButton.textContent = "Add Ball"
+            ballButton.textContent = "Add Ball"
             flag = false;
         } else {
-            pauseButton.textContent = "Remove Ball"
+            ballButton.textContent = "Remove Ball"
             flag = true;
         }
     }
