@@ -11,10 +11,8 @@
 #version 300 es
 
 in vec4 aPosition;
-in vec4 aColor;
 in vec2 aTexCoord;
 
-out vec4 vColor;
 out vec2 vTexCoord;
 
 uniform mat4 uModelViewMatrix;
@@ -22,7 +20,6 @@ uniform mat4 uProjectionMatrix;
 
 void main()
 {
-    vColor = aColor;
     vTexCoord = aTexCoord;
     gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
 }
@@ -33,7 +30,6 @@ void main()
 
 precision mediump float;
 
-in vec4 vColor;
 in vec2 vTexCoord;
 
 out vec4 fColor;
@@ -43,7 +39,6 @@ uniform sampler2D uTextureMap;
 void
 main()
 {
-    //fColor = vColor * texture(uTextureMap, vTexCoord);
     fColor = texture(uTextureMap, vTexCoord);
 }
 </script>
