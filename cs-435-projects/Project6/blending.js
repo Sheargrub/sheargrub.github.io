@@ -24,6 +24,7 @@ var texWood;
 var texPlastic;
 var texCarpet;
 var texBrick;
+var texGlass;
 var texVideo;
 var elemVideo;
 
@@ -34,6 +35,7 @@ var floor;
 var tvBody;
 var tvScreen;
 var table;
+var glassTest;
 
 var texture;
 
@@ -482,6 +484,8 @@ window.onload = function init() {
     texCarpet = initTexture(carpet);
     var brick = document.getElementById("texBrick");
     texBrick = initTexture(brick);
+    var glass = document.getElementById("texGlass");
+    texGlass = initTexture(glass);
 
     elemVideo = initVideo(document.getElementById("texVideo"));
     texVideo = initVideoTexture(elemVideo);
@@ -547,6 +551,9 @@ window.onload = function init() {
     wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
+    glassTest = new RectPrismObj(0, 1, 2, 1, 1, 1, texGlass);
+    glassTest.init();
+
     render();
 
 }
@@ -569,6 +576,8 @@ var render = function() {
     wallL.draw(mvm);
     wallB.draw(mvm);
     wallR.draw(mvm);
+
+    glassTest.draw(mvm);
     
     requestAnimationFrame(render);
 }
