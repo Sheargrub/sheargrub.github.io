@@ -24,6 +24,8 @@ var hurtboxOuter;
 var hurtboxInner;
 var followLine;
 
+var bulletRings;
+
 // state information
 var mouseInField = false;
 var mouseX = 0;
@@ -32,6 +34,8 @@ var clickPressed = false;
 var clickHeld = false;
 var focusPressed = false;
 var focusHeld = false;
+
+var playerHit = false;
 
 const FRAMETIME_MS = 16.7;
 
@@ -165,6 +169,115 @@ class Circle {
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, this.points.length);
     };
+}
+
+class VisBullet {
+
+    constructor(color, x, y, radius) {
+        this.outerCircle = new Circle(color, x, y, radius*1.25);
+        this.innerCircle = new Circle(vec4(1.0, 1.0, 1.0, 1.0), x, y, radius);
+    }
+
+    setPosition(x, y) {
+        this.outerCircle.x = x;
+        this.outerCircle.y = y;
+        this.innerCircle.x = x;
+        this.innerCircle.y = y;
+    }
+
+    setRadius(radius) {
+        this.outerCircle.radius = radius*1.25;
+        this.innerCircle.radius = radius;
+    }
+
+    playerColliding() {
+        var hitRadius = this.innerCircle.radius + HURTBOX_RADIUS;
+        var dist_x = player.x - this.innerCircle.x;
+        var dist_y = player.y - this.innerCircle.y;
+        var dist2 = dist_x*dist_x + dist_y*dist_y
+        if (dist2 <= hitRadius*hitRadius) {
+            playerHit = true;
+            console.log("Hit!");
+        }
+    }
+
+    init() {
+        this.outerCircle.init();
+        this.innerCircle.init();
+    }
+
+    draw() {
+        this.outerCircle.draw();
+        this.innerCircle.draw();
+    }
+
+}
+
+class BulletRing {
+
+    constructor(color, x, y, density, offset, speed, bulletRadius) {
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.radius = 0;
+        this.speed = speed;
+        this.density = density;
+        this.bulletRadius = bulletRadius;
+
+        this.bullets = [];
+        this.angles = [];
+        var angle = offset;
+        for (var i = 0; i < density; i++) {
+            this.bullets.push(new VisBullet(color, x, y, bulletRadius));
+            this.angles.push(angle);
+            angle += 2.0*Math.PI/density;
+        }
+
+    }
+
+    init() {
+        for (var i = 0; i < this.density; i++) {
+            this.bullets[i].init();
+        }
+    }
+
+    update(delta_ms) {
+        this.radius += this.speed * delta_ms / 1000.0;
+
+        for (var i = 0; i < this.density; i++) {
+            var x = this.x + this.radius * Math.cos(this.angles[i]);
+            var y = this.y + this.radius * Math.sin(this.angles[i]);
+            this.bullets[i].setPosition(x, y);
+        }
+
+        // Check for collision with player
+        var hitRadius = this.bulletRadius + HURTBOX_RADIUS;
+
+        // First, make sure they're within the ring
+        var dist_x = player.x - this.x;
+        var dist_y = player.y - this.y;
+        var dist2 = dist_x*dist_x + dist_y*dist_y
+        var minDist2 = (this.radius - hitRadius) * (this.radius - hitRadius)
+        var maxDist2 = (this.radius + hitRadius) * (this.radius + hitRadius)
+
+        // If so, start checking individual bullets
+        if (minDist2 <= dist2 && dist2 <= maxDist2) {
+            for (var i = 0; i < this.density; i++) {
+                this.bullets[i].playerColliding();
+            }
+        }
+    }
+
+    draw() {
+        for (var i = 0; i < this.density; i++) {
+            this.bullets[i].draw();
+        }
+    }
+
+}
+
+class RingFactory {
+
 }
 
 class Player {
@@ -419,6 +532,9 @@ window.onload = function initialize() {
     followLine = new Line(vec4(1.0, 0.7, 0.9, 1.0), canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
     followLine.init();
 
+    bulletRings = [new BulletRing(vec4(0.8, 0.2, 0.3, 1.0), 250, 500, 10, 0, 60, 12)]
+    bulletRings[0].init();
+
     setInterval(function () {update(FRAMETIME_MS)}, FRAMETIME_MS);
 }
 
@@ -448,6 +564,10 @@ function update(delta_ms) {
         }
     }
 
+    for (var i = 0; i < bulletRings.length; i++) {
+        bulletRings[i].update(delta_ms);
+    }
+
     clickPressed = false;
     focusPressed = false;
 
@@ -464,4 +584,8 @@ function render() {
     player.draw();
     hurtboxOuter.draw();
     hurtboxInner.draw();
+
+    for (var i = 0; i < bulletRings.length; i++) {
+        bulletRings[i].draw();
+    }
 }
