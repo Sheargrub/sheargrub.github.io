@@ -25,6 +25,7 @@ var texPlastic;
 var texCarpet;
 var texBrick;
 var texGlass;
+var texBall;
 var texVideo;
 var elemVideo;
 
@@ -35,7 +36,7 @@ var floor;
 var tvBody;
 var tvScreen;
 var table;
-var glassTest;
+var glass;
 
 var texture;
 
@@ -170,6 +171,108 @@ class RectPrismObj {
             "uModelViewMatrix"), false, flatten(localModelView));
 
         gl.drawArrays(gl.TRIANGLES, 0, this.numPositions);
+    }
+
+}
+
+class CupObj {
+
+    constructor(x, y, z, sx, sy, sz, tex, content) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.sx = sx;
+        this.sy = sy;
+        this.sz = sz;
+
+        this.numPositions1 = 15;
+        this.numPositions2 = 12;
+
+        this.positionsArray = [];
+        this.normalsArray = [];
+        this.texCoordsArray = [];
+
+        this.texture = tex;
+        this.content = content;
+    }
+
+    quad(a, b, c, d) {
+        var t1 = subtract(vertices[b], vertices[a]);
+        var t2 = subtract(vertices[c], vertices[b]);
+        var normal = cross(t1, t2);
+        normal = vec3(normal);
+
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[b]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[1]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[d]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[3]);
+        
+    }
+
+    init() {
+        
+        // this.quad(6, 5, 1, 2); // top removed
+        
+        this.quad(3, 0, 4, 7);
+        this.quad(4, 5, 6, 7);
+        this.quad(5, 4, 0, 1);
+
+        this.quad(2, 3, 7, 6); // left
+        this.quad(1, 0, 3, 2); // front
+
+        this.nBuffer = gl.createBuffer();
+        this.vBuffer = gl.createBuffer();
+    }
+
+    draw(inModelView) {
+        bindTexture(this.texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(0, numPositions1)), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(positionLoc);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(0, numPositions1)), gl.STATIC_DRAW);
+
+        var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
+        var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
+        gl.uniformMatrix4fv(gl.getUniformLocation(program,
+            "uModelViewMatrix"), false, flatten(localModelView));
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.numPositions1);
+
+        if (content != null) this.content.draw(inModelView);
+
+        bindTexture(this.texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(numPositions1, numPositions2)), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(positionLoc);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(numPositions1, numPositions2)), gl.STATIC_DRAW);
+
+        gl.uniformMatrix4fv(gl.getUniformLocation(program,
+            "uModelViewMatrix"), false, flatten(localModelView));
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.numPositions2);
     }
 
 }
@@ -486,6 +589,8 @@ window.onload = function init() {
     texBrick = initTexture(brick);
     var glass = document.getElementById("texGlass");
     texGlass = initTexture(glass);
+    var ball = document.getElementById("texBall");
+    texBall = initTexture(ball);
 
     elemVideo = initVideo(document.getElementById("texVideo"));
     texVideo = initVideoTexture(elemVideo);
@@ -551,8 +656,10 @@ window.onload = function init() {
     wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
-    glassTest = new RectPrismObj(0, 1, 2, 1, 1, 1, texGlass);
-    glassTest.init();
+    var ball = new RectPrismObj(0, 1, 1.5, 0.5, 0.5, 0.5, texBall);
+    ball.init();
+    glass = new CupObj(0, 1, 2, 1, 1, 1, texGlass, ball);
+    glass.init();
 
     render();
 
