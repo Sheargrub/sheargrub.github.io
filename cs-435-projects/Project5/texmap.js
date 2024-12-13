@@ -139,6 +139,10 @@ class RectPrismObj {
         this.quad(4, 5, 6, 7);
         this.quad(5, 4, 0, 1);
 
+        console.log(this.positionsArray.length)
+        console.log(this.texCoordsArray.length)
+        console.log(this.normalsArray.length)
+
         this.nBuffer = gl.createBuffer();
         this.vBuffer = gl.createBuffer();
     }
