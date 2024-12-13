@@ -42,6 +42,8 @@ var backButton;
 var forwardButton;
 
 var positionLoc;
+var modelViewMatrix;
+var projectionMatrix;
 
 var texCoord = [
     vec2(0, 0),
@@ -446,6 +448,12 @@ window.onload = function init() {
     gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(texCoordLoc);
 
+    modelViewMatrix = lookAt(vec3(0, -4, 0), vec3(0, 0, 0), vec3(0, 1, 1));
+
+    projectionMatrix = perspective(45, canvas.width/canvas.height, 10, 300);
+    gl.uniformMatrix4fv( gl.getUniformLocation(program, "uProjectionMatrix"),
+    false, flatten(projectionMatrix));
+
     //
     // Initialize a texture
     //
@@ -526,7 +534,7 @@ var render = function() {
     }
     bindTexture(texVideo)
 
-    var mvm = rotate(0, vec3(0, 1, 0))
+    var mvm = modelViewMatrix;
 
     tvScreen.draw(mvm);
     table.draw(mvm);

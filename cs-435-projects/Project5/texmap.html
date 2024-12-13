@@ -19,12 +19,13 @@ out vec2 vTexCoord;
 
 uniform vec3 uTheta;
 uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
 
 void main()
 {
     vColor = aColor;
     vTexCoord = aTexCoord;
-    gl_Position = uModelViewMatrix * aPosition;
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
 }
 </script>
 
