@@ -686,7 +686,7 @@ var render = function() {
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    glassTest.draw(mvm);
+    glass.draw(mvm);
     gl.disable(gl.BLEND);
 
     requestAnimationFrame(render);
