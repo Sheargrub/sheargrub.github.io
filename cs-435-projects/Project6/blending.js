@@ -13,7 +13,7 @@ var gl;
 var numPositions  = 36;
 
 var program;
-var flag = true;
+var flag = false;
 
 var positionsArray = [];
 var colorsArray = [];
@@ -40,6 +40,7 @@ var cup;
 
 var texture;
 
+var ballButton;
 var powerButton;
 var pauseButton;
 var backButton;
@@ -242,6 +243,8 @@ class CupObj {
     }
 
     draw(inModelView) {
+        if (!flag) return;
+
         bindTexture(this.texture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
@@ -357,6 +360,98 @@ class PlaneObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
+        var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
+        gl.uniformMatrix4fv(gl.getUniformLocation(program,
+            "uModelViewMatrix"), false, flatten(localModelView));
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.numPositions);
+    }
+
+}
+
+class BallObj {
+
+    constructor(x, y, z, rx, ry, tex) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.rx = rx;
+        this.ry = ry;
+
+        this.sx = 0.5;
+        this.sy = 0.5;
+        this.sz = 0.5;
+
+        this.numPositions = 6;
+
+        this.positionsArray = [];
+        this.normalsArray = [];
+        this.texCoordsArray = [];
+
+        this.texture = tex;
+    }
+
+    quad(a, b, c, d) {
+        var vertices = [
+            vec4(-0.5, -0.5,  0, 1.0),
+            vec4(-0.5,  0.5, 0, 1.0),
+            vec4(0.5,  0.5, 0, 1.0),
+            vec4(0.5, -0.5, 0, 1.0),
+        ]
+
+        var t1 = subtract(vertices[b], vertices[a]);
+        var t2 = subtract(vertices[c], vertices[b]);
+        var normal = cross(t1, t2);
+        normal = vec3(normal);
+
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[b]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[1]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[a]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[d]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[3]);
+    }
+
+    init() {
+        this.quad(1, 0, 3, 2);
+        this.nBuffer = gl.createBuffer();
+        this.vBuffer = gl.createBuffer();
+    }
+
+    draw(inModelView) {
+        bindTexture(this.texture);
+
+        /*
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.nBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normalsArray), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(normalLoc);
+        */
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(positionLoc);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
+
+        var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
+        var localModelView = mult(localModelView, rotate((0, 1, 0), this.ry));
+        var localModelView = mult(localModelView, rotate((1, 0, 0), this.rx));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
         gl.uniformMatrix4fv(gl.getUniformLocation(program,
             "uModelViewMatrix"), false, flatten(localModelView));
@@ -604,6 +699,7 @@ window.onload = function init() {
     pauseButton = document.getElementById("ButtonPause");
     backButton = document.getElementById("ButtonBack");
     forwardButton = document.getElementById("ButtonForward");
+    ballButton = document.getElementById("ButtonBall");
 
     powerButton.onclick = function(){
         if (tvOn) {
@@ -637,6 +733,16 @@ window.onload = function init() {
         if (elemVideo.currentTime >= elemVideo.duration) elemVideo.currentTime -= elemVideo.duration;
     };
 
+    ballButton.onclick = function(){
+        if (flag) {
+            pauseButton.textContent = "Add Ball"
+            flag = false;
+        } else {
+            pauseButton.textContent = "Remove Ball"
+            flag = true;
+        }
+    }
+
     document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project5/texmap.html","_self");};
     document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project6/blending.html","_self");};
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project7/proj7.html","_self");};
@@ -658,7 +764,7 @@ window.onload = function init() {
     wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
-    var ball = new RectPrismObj(0, 1, 2, 0.5, 0.5, 0.5, texBall);
+    var ball = new BallObj(0, 0.75, 2, 0, 0, texBall);
     ball.init();
     cup = new CupObj(0, 1, 2, 1, 1, 1, texGlass, ball);
     cup.init();
