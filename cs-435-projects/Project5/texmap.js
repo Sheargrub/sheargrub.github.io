@@ -387,7 +387,18 @@ window.onload = function init() {
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
+    var colorLoc = gl.getAttribLocation(program, "aColor");
+    gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(colorLoc);
+
     positionLoc = gl.getAttribLocation(program, "aPosition");
+    gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLoc);
+    
+    var texCoordLoc = gl.getAttribLocation(program, "aTexCoord");
+    gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(texCoordLoc);
+
     tBuffer = gl.createBuffer();
     
     modelViewMatrix = lookAt(vec3(1, 2.5, -5), vec3(0, 0.5, 0), vec3(0, 5, 0));
