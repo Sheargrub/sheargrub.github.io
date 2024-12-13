@@ -20,6 +20,8 @@ var bgGridNear;
 var bgGridFar;
 
 var player;
+var hurtboxOuter;
+var hurtboxInner;
 var followLine;
 
 // state information
@@ -35,6 +37,7 @@ const FRAMETIME_MS = 16.7;
 
 const MAX_PLAYER_SPEED = 1200 * FRAMETIME_MS/1000;
 const MAX_FOCUS_SPEED = 300 * FRAMETIME_MS/1000;
+const HURTBOX_RADIUS = 4
 
 class Block {
     constructor(color, parentX, parentY, bx, by, bWidth, idx) {
@@ -110,18 +113,72 @@ class Block {
     };
 }
 
+class Circle {
+    constructor(color, x, y, radius) {
+
+        this.color = color
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+
+        this.points = [
+            vec2(0, 0),
+            vec2(1, 0),
+            vec2(Math.sqrt(3)/2, 1/2),
+            vec2(1/Math.sqrt(2), 1/Math.sqrt(2)),
+            vec2(1/2, Math.sqrt(3)/2),
+            vec2(0, 1),
+            vec2(-1/2, Math.sqrt(3)/2),
+            vec2(-1/Math.sqrt(2), 1/Math.sqrt(2)),
+            vec2(-Math.sqrt(3)/2, 1/2),
+            vec2(-1, 0),
+            vec2(-Math.sqrt(3)/2, -1/2),
+            vec2(-1/Math.sqrt(2), -1/Math.sqrt(2)),
+            vec2(-1/2, -Math.sqrt(3)/2),
+            vec2(0, -1),
+            vec2(1/2, -Math.sqrt(3)/2),
+            vec2(1/Math.sqrt(2), -1/Math.sqrt(2)),
+            vec2(Math.sqrt(3)/2, -1/2),
+            vec2(1, 0),
+        ];
+
+    }
+
+    init() {
+        this.vBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.points), gl.STATIC_DRAW);
+    };
+
+    draw() {
+        // Remember, root of defined coordinates is hard-set to (0, 0)
+        var tm = translate(this.x, this.y, 0.0);
+        tm = mult(tm, scale(this.radius, this.radius, 1.0)); // rotates by 0 degrees
+        gl.uniformMatrix4fv(transformation, gl.FALSE, flatten(tm));
+
+        // send the color as a uniform variable
+        gl.uniform4fv(uColor, flatten(this.color));
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vPosition);
+
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, this.points.length);
+    };
+}
+
 class Player {
     constructor(color, x, y) {
 
         this.color = color;
         this.x = x;
         this.y = y;
+        this.angle = 0;
 
         this.points = [
-            vec2(-25, -25),
-            vec2(-25, 25),
-            vec2(25, 25),
-            vec2(25, -25),
+            vec2(-20, -20),
+            vec2(0, 30),
+            vec2(20, -20),
         ];
 
     }
@@ -136,14 +193,25 @@ class Player {
         var speed = MAX_PLAYER_SPEED;
         if (focusHeld) speed = MAX_FOCUS_SPEED;
 
-        var mouseDistX = mouseX - this.x;
-        var mouseDistY = mouseY - this.y;
+        var mouseDistX = Math.floor(mouseX - this.x);
+        var mouseDistY = Math.floor(mouseY - this.y);
+
+        var dist = Math.sqrt(mouseDistX*mouseDistX + mouseDistY*mouseDistY)
+
+        if (Math.abs(dist) > 3) {
+            if (mouseDistY != 0) {
+                this.angle = Math.atan(mouseDistX/mouseDistY);
+                if (mouseDistY < 0) this.angle += Math.PI;
+            } else {
+                this.angle = Math.PI/2;
+                if (mouseDistX < 0) this.angle += Math.PI;
+            }
+        }
 
         if (mouseDistX*mouseDistX + mouseDistY*mouseDistY <= speed*speed) {
             this.x = mouseX;
             this.y = mouseY;
         } else {
-            var dist = Math.sqrt(mouseDistX*mouseDistX + mouseDistY*mouseDistY)
             this.x += speed*mouseDistX/dist;
             this.y += speed*mouseDistY/dist;
         }
@@ -152,6 +220,7 @@ class Player {
     draw() {
         // Remember, root of defined coordinates is hard-set to (0, 0)
         var tm = translate(this.x, this.y, 0.0);
+        tm = mult(tm, rotate(this.angle*180/Math.PI, vec3(0, 0, 1)));
         gl.uniformMatrix4fv(transformation, gl.FALSE, flatten(tm));
 
         // send the color as a uniform variable
@@ -161,7 +230,7 @@ class Player {
         gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
 
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 3);
     };
 }
 
@@ -310,22 +379,14 @@ window.onload = function initialize() {
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0, 0, 0.25, 1.0 );
 
+    document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project5/texmap.html","_self");};
+    document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project6/blending.html","_self");};
+
     //
     //  Load shaders and initialize attribute buffers
     //
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-
-    bgGridFar = new BackgroundGrid(vec4(0.2, 0.0, 0.4, 1.0), 30, 28, 120, 100);
-    bgGridFar.init();
-    bgGridNear = new BackgroundGrid(vec4(0.1, 0.4, 0.5, 1.0), 18, 14, 85, 55);
-    bgGridNear.init();
-
-    player = new Player(vec4(0.8, 0.0, 0.0, 1.0), 250, 500);
-    player.init();
-
-    followLine = new Line(vec4(1.0, 1.0, 1.0, 0.5), canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
-    followLine.init();
 
     projection = gl.getUniformLocation( program, "projection" );
     var pm = ortho( 0.0, canvas.width, 0.0, canvas.height, -1.0, 1.0 );
@@ -337,6 +398,26 @@ window.onload = function initialize() {
 
     vPosition = gl.getAttribLocation( program, "aPosition" );
     //vColor = gl.getAttribLocation( program, "aColor" );
+
+    //
+    // Load objects and begin
+    //
+
+    bgGridFar = new BackgroundGrid(vec4(0.2, 0.0, 0.4, 1.0), 30, 28, 120, 100);
+    bgGridFar.init();
+    bgGridNear = new BackgroundGrid(vec4(0.1, 0.4, 0.5, 1.0), 18, 14, 85, 55);
+    bgGridNear.init();
+
+    player = new Player(vec4(0.4, 0.0, 0.3, 1.0), 250, 500);
+    player.init();
+
+    hurtboxOuter = new Circle(vec4(0.8, 0.2, 0.3, 1.0), 250, 500, 0);
+    hurtboxOuter.init();
+    hurtboxInner = new Circle(vec4(1.0, 1.0, 1.0, 1.0), 250, 500, 0);
+    hurtboxInner.init();
+
+    followLine = new Line(vec4(1.0, 0.7, 0.9, 1.0), canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+    followLine.init();
 
     setInterval(function () {update(FRAMETIME_MS)}, FRAMETIME_MS);
 }
@@ -351,6 +432,22 @@ function update(delta_ms) {
         followLine.points[1] = vec2(mouseX, mouseY);
     }
 
+    hurtboxInner.x = player.x;
+    hurtboxInner.y = player.y;
+    hurtboxOuter.x = player.x;
+    hurtboxOuter.y = player.y;
+    if (focusHeld && hurtboxInner.radius < HURTBOX_RADIUS) {
+        hurtboxInner.radius += 4 * (delta_ms/1000) * HURTBOX_RADIUS;
+        hurtboxOuter.radius += 4 * (delta_ms/1000) * (HURTBOX_RADIUS+3);
+    } else if (hurtboxInner.radius != 0) {
+        hurtboxInner.radius -= 8 * (delta_ms/1000) * HURTBOX_RADIUS;
+        hurtboxOuter.radius -= 8 * (delta_ms/1000) * (HURTBOX_RADIUS+3);
+        if (hurtboxInner.radius < 0) {
+            hurtboxOuter.radius = 0;
+            hurtboxInner.radius = 0;
+        }
+    }
+
     clickPressed = false;
     focusPressed = false;
 
@@ -359,8 +456,12 @@ function update(delta_ms) {
 
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
+
     bgGridFar.draw();
     bgGridNear.draw();
-    player.draw();
+
     if (mouseInField) followLine.draw();
+    player.draw();
+    hurtboxOuter.draw();
+    hurtboxInner.draw();
 }
