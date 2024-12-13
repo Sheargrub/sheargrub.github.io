@@ -448,9 +448,9 @@ window.onload = function init() {
     gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(texCoordLoc);
 
-    modelViewMatrix = lookAt(vec3(0, -4, 0), vec3(0, 0, 0), vec3(0, 1, 1));
+    modelViewMatrix = lookAt(vec3(0, -5, 0), vec3(0, 0, 0), vec3(0, 1, 1));
 
-    projectionMatrix = perspective(45, canvas.width/canvas.height, 10, 300);
+    projectionMatrix = perspective(45, canvas.width/canvas.height, 1, 50);
     gl.uniformMatrix4fv( gl.getUniformLocation(program, "uProjectionMatrix"),
     false, flatten(projectionMatrix));
 
