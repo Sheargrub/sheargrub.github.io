@@ -16,123 +16,25 @@ var vPosition;  // location of attrubute variables
 var uColor;   // location of uniform variable 
 
 // objects
-var sourceMinos;
-var draggableMinos;
-var lowerLine;
-var upperLine;
-
 var bgGridNear;
 var bgGridFar;
 
-// state information
-var dragActive;
-var clickIndex;
-var prevX;
-var prevY;
+var player;
+var followLine;
 
-const DELETION_Y = 100;
+// state information
+var mouseInField = false;
+var mouseX = 0;
+var mouseY = 0;
+var clickPressed = false;
+var clickHeld = false;
+var focusPressed = false;
+var focusHeld = false;
+
 const FRAMETIME_MS = 16.7;
 
-// bx, by: grid positions of blocks in the mino; to be multiplied by bWidth. Pass in arrays of length 4
-class ProtoMino {
-    
-    constructor(color, bWidth, x, y, bx, by) {
-
-        if (bx.length != by.length) throw new Error("Mismatched mino coordinate inputs");
-        this.centerIndex = -1; // Block that is currently acting as the center of the mino
-
-        this.blocks;
-
-        this.color = color;
-        this.bWidth = bWidth;
-        this.x = x;
-        this.y = y;
-        this.bx = bx;
-        this.by = by;
-
-    }
-
-    init() {
-        this.blocks = [];
-        for (var i = 0; i < this.bx.length; i++) {
-            this.blocks.push(new Block(this.color, this.x, this.y, this.bx[i], this.by[i], this.bWidth, i));
-            if (this.bx[i] == 0 && this.by[i] == 0) this.centerIndex = i;
-            this.blocks[i].init();
-        }
-    };
-
-    // Returns the index of the block for which collision was detected.
-    blockMeeting(x, y) {
-        for (var i = 0; i < this.blocks.length; i++) {
-            if (this.blocks[i].isInside(x, y)) {
-                return i;
-            }
-        }
-        return null;
-    };
-
-    setPosition(x, y) {
-        this.x = x;
-        this.y = y;
-        for (var i = 0; i < this.blocks.length; i++) {
-            this.blocks[i].parentX = this.x;
-            this.blocks[i].parentY = this.y;
-        }
-    };
-
-    shiftPosition(dx, dy) {
-        this.setPosition(this.x + dx, this.y + dy);
-    };
-
-    // Returns true if any part of the block is below y.
-    isBelow(y) {
-        for (var i = 0; i < this.blocks.length; i++) {
-            if (this.blocks[i].isBelow(y)) {
-                return true;
-            }
-        }
-        return false; 
-    }
-
-    // Sets the center block
-    setCenter(idx) {
-        var xAdj = this.blocks[idx].offsetX;
-        var yAdj = this.blocks[idx].offsetY;
-        this.shiftPosition(xAdj, yAdj);
-
-        xAdj = -xAdj;
-        yAdj = -yAdj;
-        for (var i = 0; i < this.blocks.length; i++) {
-            this.blocks[i].shiftOffset(xAdj, yAdj);
-        }
-
-        this.centerIndex = idx;
-    };
-
-    // Rotates about the current center block
-    rotate(clockwise = false) {
-        if (clockwise) {
-            for (var i = 0; i < this.blocks.length; i++) {
-                this.blocks[i].rotateClockwise();
-            }
-        }
-        else {
-            for (var i = 0; i < this.blocks.length; i++) {
-                this.blocks[i].rotateCounterClockwise();
-            }
-        }
-    };
-
-    draw() {
-        for (var i = 0; i < this.blocks.length; i++) {
-            this.blocks[i].draw();
-        }
-    };
-
-    clone() {
-        return new ProtoMino(this.color, this.bWidth, this.x, this.y, this.bx, this.by);
-    }
-}
+const MAX_PLAYER_SPEED = 1200 * FRAMETIME_MS/1000;
+const MAX_FOCUS_SPEED = 300 * FRAMETIME_MS/1000;
 
 class Block {
     constructor(color, parentX, parentY, bx, by, bWidth, idx) {
@@ -195,6 +97,61 @@ class Block {
         var tm = translate(this.parentX + this.offsetX, this.parentY + this.offsetY, 0.0);
         tm = mult(tm, rotate(0, vec3(0, 0, 1))); // rotates by 0 degrees
         tm = mult(tm, translate(-this.points[0][0], -this.points[0][1], 0.0));
+        gl.uniformMatrix4fv(transformation, gl.FALSE, flatten(tm));
+
+        // send the color as a uniform variable
+        gl.uniform4fv(uColor, flatten(this.color));
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vPosition);
+
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    };
+}
+
+class Player {
+    constructor(color, x, y) {
+
+        this.color = color;
+        this.x = x;
+        this.y = y;
+
+        this.points = [
+            vec2(-25, -25),
+            vec2(-25, 25),
+            vec2(25, 25),
+            vec2(25, -25),
+        ];
+
+    }
+
+    init() {
+        this.vBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.points), gl.STATIC_DRAW);
+    };
+
+    updateWithMouse() {
+        var speed = MAX_PLAYER_SPEED;
+        if (focusHeld) speed = MAX_FOCUS_SPEED;
+
+        var mouseDistX = mouseX - this.x;
+        var mouseDistY = mouseY - this.y;
+
+        if (mouseDistX*mouseDistX + mouseDistY*mouseDistY <= speed*speed) {
+            this.x = mouseX;
+            this.y = mouseY;
+        } else {
+            var dist = Math.sqrt(mouseDistX*mouseDistX + mouseDistY*mouseDistY)
+            this.x += speed*mouseDistX/dist;
+            this.y += speed*mouseDistY/dist;
+        }
+    }
+
+    draw() {
+        // Remember, root of defined coordinates is hard-set to (0, 0)
+        var tm = translate(this.x, this.y, 0.0);
         gl.uniformMatrix4fv(transformation, gl.FALSE, flatten(tm));
 
         // send the color as a uniform variable
@@ -297,7 +254,6 @@ class BackgroundGrid {
         gl.uniformMatrix4fv(transformation, gl.FALSE, flatten(tm));
 
         // send the color as a uniform variable
-        console.log(this.color);
         gl.uniform4fv(uColor, flatten(this.color));
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
@@ -314,80 +270,41 @@ window.onload = function initialize() {
     gl = canvas.getContext('webgl2');
     if (!gl) alert("WebGL 2.0 isn't available");
 
+    canvas.addEventListener("mouseover", function(event){
+        mouseInField = true;
+    });
+
+    canvas.addEventListener("mouseout", function(event){
+        mouseInField = false;
+    });
+
     canvas.addEventListener("mousedown", function(event){
-        if (event.button!=0) return; // left button only
-        var x = event.pageX - canvas.offsetLeft;
-        var y = event.pageY - canvas.offsetTop;
-        y=canvas.height-y;
-
-        prevX=x;
-        prevY=y;
-        
-        dragActive = false;
-
-        // First, see if one of the draggable minos is being clicked.
-        // (Iterate in reverse order to account for depth)
-        for (var i = draggableMinos.length-1; i >= 0; i--) {
-            var blockIndex = draggableMinos[i].blockMeeting(x, y);
-            if (blockIndex != null) {
-                dragActive = true;
-                clickIndex = draggableMinos.length-1;
-
-                // Minimize mino depth by moving it to the end of the list
-                var temp = draggableMinos[i]
-                for (var j = i; j < draggableMinos.length-1; j++) {
-                    draggableMinos[j] = draggableMinos[j+1];
-                }
-                draggableMinos[clickIndex] = temp;
-
-                if (event.shiftKey) {  // with shift key, rotate counter-clockwise
-                    draggableMinos[clickIndex].setCenter(blockIndex);
-                    draggableMinos[clickIndex].rotate();
-                    // Check for deletion
-                    if (draggableMinos[clickIndex].isBelow(DELETION_Y)) {
-                        dragActive = false;
-                        draggableMinos.splice(clickIndex, 1);
-                    }
-                }
-
-                return;
-            }
-        }
-
-        // If not, check if it's time to duplicate one of the source minos.
-        for (var i = 0; i < sourceMinos.length; i++) {
-            if (sourceMinos[i].blockMeeting(x, y) != null) {
-                dragActive = true;
-                clickIndex = draggableMinos.length;
-                draggableMinos.push(sourceMinos[i].clone()); // duplicate mino
-                draggableMinos[clickIndex].init();
-                
-                return;
-            }
-        }
-
+        clickPressed = true;
+        clickHeld = true;
     });
     
     canvas.addEventListener("mouseup", function(event){
-        dragActive = false;
+        clickPressed = false;
+        clickHeld = false;
     });
 
     canvas.addEventListener("mousemove", function(event){
-        if (dragActive) {
-            var x = event.pageX - canvas.offsetLeft;
-            var y = event.pageY - canvas.offsetTop;
-            y = canvas.height - y;
-            draggableMinos[clickIndex].shiftPosition(x-prevX, y-prevY);
+        mouseX = event.pageX - canvas.offsetLeft;
+        mouseY = canvas.height - (event.pageY - canvas.offsetTop);
+    });
 
-            // Check for deletion
-            if (draggableMinos[clickIndex].isBelow(DELETION_Y)) {
-                dragActive = false;
-                draggableMinos.splice(clickIndex, 1);
-            }
-
+    document.addEventListener("keydown", function(event){
+        if (event.key == "Shift") {
+            focusPressed = !focusHeld;
+            focusHeld = true;
         }
-        prevX=x;
-        prevY=y;
+    });
+
+    document.addEventListener("keyup", function(event){
+        if (event.key == "Shift") {
+            focusPressed = false;
+            focusHeld = false;
+        }
     });
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -399,53 +316,16 @@ window.onload = function initialize() {
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
-    // Initial State
-    sourceMinos = [
-        new ProtoMino(vec4(0.5, 0.0, 1.0, 1.0), 30, 60, 540,
-            [0, 1, 0, -1],
-            [0, 0, -1, 0]
-        ), // T
-        new ProtoMino(vec4(0.0, 1.0, 1.0, 1.0), 30, 150, 570,
-            [0, 0, 0, 0],
-            [0, -1, -2, -3]
-        ), // I
-        new ProtoMino(vec4(1.0, 1.0, 0.0, 1.0), 30, 210, 540,
-            [0, 0, 1, 1],
-            [0, -1, 0, -1]
-        ), // O
-        new ProtoMino(vec4(0.0, 1.0, 0.0, 1.0), 30, 330, 540,
-            [0, -1, 0, 1],
-            [0, -1, -1, 0]
-        ), // S
-        new ProtoMino(vec4(1.0, 0.0, 0.0, 1.0), 30, 450, 540,
-            [0, 1, 0, -1],
-            [0, -1, -1, 0]
-        ), // T
-        new ProtoMino(vec4(1.0, 0.5, 0.0, 1.0), 30, 570, 555,
-            [0, 0, 0, -1],
-            [0, -1, -2, -2]
-        ), // J
-        new ProtoMino(vec4(0.0, 0.0, 1.0, 1.0), 30, 630, 555,
-            [0, 0, 0, 1],
-            [0, -1, -2, -2]
-        ), // L
-    ]
-    for (var i = 0; i < sourceMinos.length; i++) {
-        sourceMinos[i].init();
-        sourceMinos[i].shiftPosition(30, -15); // small shared offset
-    }
-
-    draggableMinos = [];
-
-    upperLine = new Line(vec4(1.0, 1.0, 1.0, 1.0), 20, 450, 780, 450);
-    upperLine.init();
-    lowerLine = new Line(vec4(1.0, 1.0, 1.0, 1.0), 20, 100, 780, 100);
-    lowerLine.init();
-
     bgGridFar = new BackgroundGrid(vec4(0.2, 0.0, 0.4, 1.0), 30, 28, 120, 100);
     bgGridFar.init();
     bgGridNear = new BackgroundGrid(vec4(0.1, 0.4, 0.5, 1.0), 18, 14, 85, 55);
     bgGridNear.init();
+
+    player = new Player(vec4(0.8, 0.0, 0.0, 1.0), 250, 500);
+    player.init();
+
+    followLine = new Line(vec4(1.0, 1.0, 1.0, 0.5), canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+    followLine.init();
 
     projection = gl.getUniformLocation( program, "projection" );
     var pm = ortho( 0.0, canvas.width, 0.0, canvas.height, -1.0, 1.0 );
@@ -462,9 +342,17 @@ window.onload = function initialize() {
 }
 
 function update(delta_ms) {
-    console.log("updated");
     bgGridNear.update(delta_ms);
     bgGridFar.update(delta_ms);
+
+    if (mouseInField) {
+        player.updateWithMouse();
+        followLine.points[0] = vec2(player.x, player.y);
+        followLine.points[1] = vec2(mouseX, mouseY);
+    }
+
+    clickPressed = false;
+    focusPressed = false;
 
     render();
 }
@@ -473,12 +361,6 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     bgGridFar.draw();
     bgGridNear.draw();
-    upperLine.draw();
-    lowerLine.draw();
-    for (var i = 0; i < sourceMinos.length; i++) {
-        sourceMinos[i].draw();
-    }
-    for (var i = 0; i < draggableMinos.length; i++) {
-        draggableMinos[i].draw();
-    }
+    player.draw();
+    if (mouseInField) followLine.draw();
 }
