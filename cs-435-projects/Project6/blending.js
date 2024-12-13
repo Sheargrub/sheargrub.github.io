@@ -36,7 +36,7 @@ var floor;
 var tvBody;
 var tvScreen;
 var table;
-var glass;
+var cup;
 
 var texture;
 
@@ -658,8 +658,8 @@ window.onload = function init() {
 
     var ball = new RectPrismObj(0, 1, 1.5, 0.5, 0.5, 0.5, texBall);
     ball.init();
-    glass = new CupObj(0, 1, 2, 1, 1, 1, texGlass, ball);
-    glass.init();
+    cup = new CupObj(0, 1, 2, 1, 1, 1, texGlass, ball);
+    cup.init();
 
     render();
 
@@ -686,7 +686,7 @@ var render = function() {
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    glass.draw(mvm);
+    cup.draw(mvm);
     gl.disable(gl.BLEND);
 
     requestAnimationFrame(render);
