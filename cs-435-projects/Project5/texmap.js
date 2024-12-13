@@ -560,6 +560,11 @@ var render = function() {
     tvScreen.draw(mvm);
     tvBody.draw(mvm);
     table.draw(mvm);
+
+    floor.draw(mvm);
+    wallL.draw(mvm);
+    wallB.draw(mvm);
+    wallR.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays(gl.TRIANGLES, 0, numPositions);
