@@ -748,9 +748,9 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, 3.14, 1.1, 0.6, 1, texVideo); 
+    tvScreen = new PlaneObj(0, -0.1, 3.29, 1.1, 0.6, 1, texVideo); 
     tvScreen.init();
-    tvBody = new RectPrismObj(0, 0, 3.3, 1.3, 0.8, 0.3, texPlastic);
+    tvBody = new RectPrismObj(0, 0, 3.45, 1.3, 0.8, 0.3, texPlastic);
     tvBody.init();
     table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
     table.init();
@@ -764,9 +764,9 @@ window.onload = function init() {
     wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
-    var ball = new BallObj(-0.4, 0.25, 3.1, 0, 0, texBall);
+    var ball = new BallObj(-0.4, -0.15, 3.1, 0, 0, texBall);
     ball.init();
-    cup = new CupObj(-0.4, 0.5, 3.1, 0.6, 1, 0.6, texGlass, ball);
+    cup = new CupObj(-0.4, 0.1, 3.1, 0.6, 1, 0.6, texGlass, ball);
     cup.init();
 
     render();
