@@ -530,12 +530,17 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, 2.84, 1.1, 0.6, 1, texVideo); 
+    tvScreen = new PlaneObj(0, 0, 3.04, 1.1, 0.6, 1, texVideo); 
     tvScreen.init();
-    tvBody = new RectPrismObj(0, 0, 3, 1.3, 0.8, 0.3, texPlastic);
+    tvBody = new RectPrismObj(0, 0, 3.2, 1.3, 0.8, 0.3, texPlastic);
     tvBody.init();
     table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
     table.init();
+
+    floor = new RectPrismObj(0, -1, 0, 3.5, 0.1, 1.5, texCarpet);
+    wallL = new RectPrismObj(0.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
+    wallB = new RectPrismObj(0, 0.5, 4.25, 1.5, 1.5, 0.1, texBrick);
+    wallR = new RectPrismObj(0.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
 
     render();
 
