@@ -764,9 +764,9 @@ window.onload = function init() {
     wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
-    var ball = new BallObj(0, 0.75, 2, 0, 0, texBall);
+    var ball = new BallObj(0.4, 0.65, 3, 0, 0, texBall);
     ball.init();
-    cup = new CupObj(0, 1, 2, 1, 1, 1, texGlass, ball);
+    cup = new CupObj(0.4, 0.9, 3, 0.6, 1, 0.6, texGlass, ball);
     cup.init();
 
     render();
