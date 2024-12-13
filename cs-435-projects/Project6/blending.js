@@ -578,7 +578,7 @@ var render = function() {
     wallR.draw(mvm);
 
     gl.enable(gl.BLEND);
-    gl.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     glassTest.draw(mvm);
     gl.disable(gl.BLEND);
 
