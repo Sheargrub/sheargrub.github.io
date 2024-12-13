@@ -525,9 +525,9 @@ window.onload = function init() {
         if (elemVideo.currentTime >= elemVideo.duration) elemVideo.currentTime -= elemVideo.duration;
     };
 
-    document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project5/texmap.html","_self");};
-    document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project6/blending.html","_self");};
-    document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
+    document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project5/texmap.html","_self");};
+    document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project6/blending.html","_self");};
+    document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project7/proj7.html","_self");};
 
     // Init objects
     tvScreen = new PlaneObj(0, 0, 2.54, 1.1, 0.6, 1, texVideo); 
