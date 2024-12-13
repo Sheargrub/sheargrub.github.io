@@ -525,16 +525,16 @@ window.onload = function init() {
         if (elemVideo.currentTime >= elemVideo.duration) elemVideo.currentTime -= elemVideo.duration;
     };
 
-    document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project5/texmap.html","_self");};
-    document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project6/blending.html","_self");};
-    document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-Projects/Project7/proj7.html","_self");};
+    document.getElementById("ButtonProj5").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project5/texmap.html","_self");};
+    document.getElementById("ButtonProj6").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project6/blending.html","_self");};
+    document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, 2.54, 1.1, 0.6, 1, texVideo); 
+    tvScreen = new PlaneObj(0, 0, 2.84, 1.1, 0.6, 1, texVideo); 
     tvScreen.init();
-    tvBody = new RectPrismObj(0, 0, 2.7, 1.3, 0.8, 0.3, texPlastic);
+    tvBody = new RectPrismObj(0, 0, 3, 1.3, 0.8, 0.3, texPlastic);
     tvBody.init();
-    table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
+    table = new TableObj(0, -0.3, 2, 1, 1, 1, texPlastic);
     table.init();
 
     render();
