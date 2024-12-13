@@ -448,7 +448,7 @@ window.onload = function init() {
     gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(texCoordLoc);
 
-    modelViewMatrix = lookAt(vec3(0, 0, -5), vec3(0, 0, 0), vec3(0, 1, 1));
+    modelViewMatrix = lookAt(vec3(1, 2, -5), vec3(0, 0, 0), vec3(0, 5, 0));
 
     projectionMatrix = perspective(45, canvas.width/canvas.height, 1, 50);
     gl.uniformMatrix4fv( gl.getUniformLocation(program, "uProjectionMatrix"),
@@ -517,7 +517,7 @@ window.onload = function init() {
     // Init objects
     tvScreen = new PlaneObj(0, 0, -1, 1.6, 0.9, 1, texVideo); 
     tvScreen.init();
-    table = new TableObj(0, 0, -10, 0.5, 0.5, 0.5, texWood);
+    table = new TableObj(0, -2, -1, 0.5, 0.5, 0.5, texWood);
     table.init();
 
     render();
