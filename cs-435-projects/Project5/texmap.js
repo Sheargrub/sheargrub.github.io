@@ -193,22 +193,22 @@ class PlaneObj {
 
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[0]);
+        this.texCoordsArray.push(texCoord[1]);
         this.positionsArray.push(vertices[b]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[0]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[3]);
+        this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[1]);
         this.positionsArray.push(vertices[c]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[2]);
-        this.positionsArray.push(vertices[a]);
-        this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[0]);
-        this.positionsArray.push(vertices[c]);
-        this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[2]);
+        this.texCoordsArray.push(texCoord[3]);
         this.positionsArray.push(vertices[d]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[3]);
+        this.texCoordsArray.push(texCoord[2]);
     }
 
     init() {
@@ -515,9 +515,9 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/435-Projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, -1, 1.6, 0.9, 1, texVideo); 
+    tvScreen = new PlaneObj(0, 0, -3, 1.6, 0.9, 1, texVideo); 
     tvScreen.init();
-    table = new TableObj(0, -2, -1, 0.5, 0.5, 0.5, texWood);
+    table = new TableObj(0, 0, -1, 0.5, 0.5, 0.5, texWood);
     table.init();
 
     render();
