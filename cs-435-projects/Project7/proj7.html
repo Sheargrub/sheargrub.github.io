@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Ian Minor ~ CS 435, Project #7</title>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
+
+        in vec4 aPosition;
+
+        uniform mat4 projection;
+        uniform mat4 transformation;
+
+        void main() {
+            gl_Position = projection*transformation*aPosition;
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
+
+        precision mediump float;
+
+        uniform vec4 uColor;
+        out vec4 fColor;
+
+        void main() {
+            fColor = uColor;
+        }
+    </script>
+
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MVnew.js"></script>
+    <script type="text/javascript" src="proj7.js"></script>
+
+</head>
+
+<body>
+
+    <canvas id="gl-canvas" width="800" height="600">
+        Error: unable to load HTML5 canvas element.
+    </canvas>
+
+</body>
+
+</html>
