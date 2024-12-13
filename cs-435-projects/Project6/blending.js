@@ -237,6 +237,8 @@ class CupObj {
 
         this.nBuffer = gl.createBuffer();
         this.vBuffer = gl.createBuffer();
+
+        this.content.init();
     }
 
     draw(inModelView) {
@@ -257,7 +259,7 @@ class CupObj {
 
         gl.drawArrays(gl.TRIANGLES, 0, this.numPositions1);
 
-        if (content != null) this.content.draw(inModelView);
+        if (this.content != null) this.content.draw(inModelView);
 
         bindTexture(this.texture);
 
