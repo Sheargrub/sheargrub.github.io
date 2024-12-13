@@ -42,6 +42,8 @@ var backButton;
 var forwardButton;
 
 var positionLoc;
+var tBuffer;
+
 var modelViewMatrix;
 var projectionMatrix;
 
@@ -110,7 +112,7 @@ class RectPrismObj {
 
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[0]);
+        
         this.positionsArray.push(vertices[b]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[1]);
@@ -126,6 +128,7 @@ class RectPrismObj {
         this.positionsArray.push(vertices[d]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[3]);
+        
     }
 
     init() {
@@ -154,6 +157,9 @@ class RectPrismObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
@@ -170,7 +176,7 @@ class PlaneObj {
     constructor(x, y, z, sx, sy, sz, tex) {
         this.x = x;
         this.y = y;
-        this.z = z-0.5;
+        this.z = z;
 
         this.sx = sx;
         this.sy = sy;
@@ -186,6 +192,13 @@ class PlaneObj {
     }
 
     quad(a, b, c, d) {
+        var vertices = [
+            vec4(-0.5, -0.5,  0, 1.0),
+            vec4(-0.5,  0.5, 0, 1.0),
+            vec4(0.5,  0.5, 0, 1.0),
+            vec4(0.5, -0.5, 0, 1.0),
+        ]
+
         var t1 = subtract(vertices[b], vertices[a]);
         var t2 = subtract(vertices[c], vertices[b]);
         var normal = cross(t1, t2);
@@ -193,22 +206,22 @@ class PlaneObj {
 
         this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[1]);
+        this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[b]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[1]);
+        this.positionsArray.push(vertices[c]);
+        this.normalsArray.push(normal);
+        this.texCoordsArray.push(texCoord[2]);
+        this.positionsArray.push(vertices[a]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[c]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[3]);
-        this.positionsArray.push(vertices[a]);
-        this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[1]);
-        this.positionsArray.push(vertices[c]);
-        this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[3]);
         this.positionsArray.push(vertices[d]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[2]);
+        this.texCoordsArray.push(texCoord[3]);
     }
 
     init() {
@@ -231,6 +244,9 @@ class PlaneObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
         var localModelView = mult(inModelView, translate(this.x, this.y, this.z));
         var localModelView = mult(localModelView, scale(this.sx, this.sy, this.sz));
@@ -440,7 +456,7 @@ window.onload = function init() {
     gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(positionLoc);
 
-    var tBuffer = gl.createBuffer();
+    tBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
 
@@ -532,11 +548,11 @@ var render = function() {
         if (tvOn) updateVideoTexture(gl, texVideo, elemVideo);
         else disableVideoTexture(gl, texVideo);
     }
-    bindTexture(texVideo)
 
     var mvm = modelViewMatrix;
 
     tvScreen.draw(mvm);
+    console.log(table.texture)
     table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
