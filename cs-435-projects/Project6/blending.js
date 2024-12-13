@@ -229,10 +229,10 @@ class CupObj {
         // this.quad(6, 5, 1, 2); // top removed
         
         this.quad(3, 0, 4, 7);
-        this.quad(2, 3, 7, 6);
+        this.quad(5, 4, 0, 1);
         this.quad(1, 0, 3, 2);
 
-        this.quad(5, 4, 0, 1); // left
+        this.quad(2, 3, 7, 6); // left
         this.quad(4, 5, 6, 7); // front
         
         this.nBuffer = gl.createBuffer();
@@ -264,13 +264,12 @@ class CupObj {
         bindTexture(this.texture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
-        console.log(this.positionsArray.slice(this.numPositions1, this.numPositions2));
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(this.numPositions1, this.numPositions2)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray.slice(this.numPositions1, this.positionsArray.length)), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(this.numPositions1, this.numPositions2)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray.slice(this.numPositions1, this.positionsArray.length)), gl.STATIC_DRAW);
 
         gl.uniformMatrix4fv(gl.getUniformLocation(program,
             "uModelViewMatrix"), false, flatten(localModelView));
