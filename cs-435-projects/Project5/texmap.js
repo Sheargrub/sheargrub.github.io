@@ -157,7 +157,7 @@ class RectPrismObj {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.positionsArray), gl.STATIC_DRAW);
         gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(positionLoc);
-        
+
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW);
 
@@ -218,7 +218,7 @@ class PlaneObj {
         this.texCoordsArray.push(texCoord[0]);
         this.positionsArray.push(vertices[c]);
         this.normalsArray.push(normal);
-        this.texCoordsArray.push(texCoord[1]);
+        this.texCoordsArray.push(texCoord[2]);
         this.positionsArray.push(vertices[d]);
         this.normalsArray.push(normal);
         this.texCoordsArray.push(texCoord[3]);
@@ -300,7 +300,6 @@ class TableObj {
 
 function initTexture( image ) {
     texture = gl.createTexture();
-    console.log(texture);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB,
         gl.RGB, gl.UNSIGNED_BYTE, image);
@@ -552,7 +551,6 @@ var render = function() {
     var mvm = modelViewMatrix;
 
     tvScreen.draw(mvm);
-    console.log(table.texture)
     table.draw(mvm);
     /*
     gl.uniform3fv(thetaLoc, theta);
