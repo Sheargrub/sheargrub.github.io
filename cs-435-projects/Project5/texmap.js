@@ -530,9 +530,9 @@ window.onload = function init() {
     document.getElementById("ButtonProj7").onclick = function(){window.open("http://sheargrub.com/cs-435-projects/Project7/proj7.html","_self");};
 
     // Init objects
-    tvScreen = new PlaneObj(0, 0, 3.04, 1.1, 0.6, 1, texVideo); 
+    tvScreen = new PlaneObj(0, 0, 2.64, 1.1, 0.6, 1, texVideo); 
     tvScreen.init();
-    tvBody = new RectPrismObj(0, 0, 3.2, 1.3, 0.8, 0.3, texPlastic);
+    tvBody = new RectPrismObj(0, 0, 2.8, 1.3, 0.8, 0.3, texPlastic);
     tvBody.init();
     table = new TableObj(0, -0.3, 2, 1, 1, 1, texWood);
     table.init();
@@ -543,7 +543,7 @@ window.onload = function init() {
     wallL.init();
     wallB = new RectPrismObj(0, 0, 5.5, 4, 4, 0.1, texBrick);
     wallB.init();
-    wallR = new RectPrismObj(2, 0, 3.5, 4, 4, 1.5, texBrick);
+    wallR = new RectPrismObj(2, 0, 3.5, 0.1, 4, 4, texBrick);
     wallR.init();
 
     render();
@@ -552,7 +552,6 @@ window.onload = function init() {
 
 var render = function() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    if(flag) theta[axis] += 2.0;
 
     if (copyVideo) {
         if (tvOn) updateVideoTexture(gl, texVideo, elemVideo);
@@ -569,9 +568,6 @@ var render = function() {
     wallL.draw(mvm);
     wallB.draw(mvm);
     wallR.draw(mvm);
-    /*
-    gl.uniform3fv(thetaLoc, theta);
-    gl.drawArrays(gl.TRIANGLES, 0, numPositions);
-    */
+    
     requestAnimationFrame(render);
 }
