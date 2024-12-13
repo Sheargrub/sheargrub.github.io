@@ -27,6 +27,9 @@ var followLine;
 var bulletRings;
 var ringFactories;
 
+var explosion;
+var explosionGrowth;
+
 // state information
 var mouseInField = false;
 var mouseX = 0;
@@ -37,8 +40,12 @@ var focusPressed = false;
 var focusHeld = false;
 
 var playerHit = false;
+var justHit = false;
 var timerStart = 0;
+var timerEnd = 0;
 var phase = 0;
+var highScore = 0;
+var playerVisible = true;
 
 const FRAMETIME_MS = 16.7;
 
@@ -211,13 +218,15 @@ class VisBullet {
     }
 
     playerColliding() {
+        if (playerHit) return;
         var hitRadius = this.innerCircle.radius + HURTBOX_RADIUS;
         var dist_x = player.x - this.innerCircle.x;
         var dist_y = player.y - this.innerCircle.y;
         var dist2 = dist_x*dist_x + dist_y*dist_y
         if (dist2 <= hitRadius*hitRadius) {
+            timerEnd = Date.now();
             playerHit = true;
-            console.log("Hit!");
+            justHit = true;
         }
     }
 
@@ -577,7 +586,7 @@ window.onload = function initialize() {
     bgGridNear = new BackgroundGrid(vec4(0.1, 0.4, 0.5, 1.0), 18, 14, 85, 55);
     bgGridNear.init();
 
-    player = new Player(vec4(0.4, 0.0, 0.3, 1.0), 250, 500);
+    player = new Player(vec4(0.4, 0.0, 0.3, 1.0), 250, 250);
     player.init();
 
     hurtboxOuter = new Circle(vec4(0.8, 0.2, 0.3, 1.0), 250, 500, 0);
@@ -590,6 +599,9 @@ window.onload = function initialize() {
 
     bulletRings = [];
     ringFactories = [];
+
+    explosion = new Circle(vec4(1.0, 1.0, 1.0, 1.0), 0, 0, 0);
+    explosion.init();
 
     timerStart = Date.now();
 
@@ -625,7 +637,7 @@ function update(delta_ms) {
     bgGridNear.update(delta_ms);
     bgGridFar.update(delta_ms);
 
-    if (mouseInField) {
+    if (mouseInField && !playerHit) {
         player.updateWithMouse();
         followLine.points[0] = vec2(player.x, player.y);
         followLine.points[1] = vec2(mouseX, mouseY);
@@ -662,42 +674,78 @@ function update(delta_ms) {
             i--;
         }
     }
-
+    
     clickPressed = false;
     focusPressed = false;
 
-    var timerNow = Math.round((Date.now() - timerStart)/1000);
-    var timerString = "Current time: " + timerNow.toString() + " seconds";
-    document.getElementById("timerfield").textContent = timerString;
+    if (!playerHit) {
+        var timerNow = Math.round((Date.now() - timerStart)/1000);
+        var timerString = timerNow.toString() + " seconds";
+        document.getElementById("timerfield").textContent = "Current time: " + timerString;
 
-    if (timerNow < 65) {
-        if (timerNow >= PHASE_TIMINGS[phase]) {
-            phase++;
-            document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + PHASE_TEXT[phase];
-
-            // Primary rings
-            if (phase == 1) {
-                ringFactories.push(new RingFactory(vec4(0.8, 0.2, 0.3, 1.0), 250, 600, 50, 100, 10, 12, 0.7));
-            }
-
-            // Secondary rings
-            else if (phase == 6) {
-                ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 100, 680, 60, 100, 8, 12, 0.9));
-                ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 400, 680, 60, 100, 8, 12, 0.9));
-            }
-
-            else {
-                buffRings(phase-2);
-            }
-
+        if (timerNow > highScore) {
+            highScore = timerNow;
+            document.getElementById("peakfield").textContent = "Best time: " + timerString;
         }
-    } else if (timerNow/10 >= phase+1) {
-        phase++;
-        var behavior = Math.floor(Math.random()*4);
-        document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + BEHAVIOR_TEXT[behavior] + " up!";
-        buffRings(behavior);
-    }
+        
+        if (timerNow < 65) {
+            if (timerNow >= PHASE_TIMINGS[phase]) {
+                phase++;
+                document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + PHASE_TEXT[phase];
 
+                // Primary rings
+                if (phase == 1) {
+                    ringFactories.push(new RingFactory(vec4(0.8, 0.2, 0.3, 1.0), 250, 600, 50, 100, 10, 12, 0.7));
+                }
+
+                // Secondary rings
+                else if (phase == 6) {
+                    ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 100, 680, 60, 100, 8, 12, 0.9));
+                    ringFactories.push(new RingFactory(vec4(0.2, 0.2, 0.8, 1.0), 400, 680, 60, 100, 8, 12, 0.9));
+                }
+
+                else {
+                    buffRings(phase-2);
+                }
+
+            }
+        } else if (timerNow/10 >= phase+1) {
+            phase++;
+            var behavior = Math.floor(Math.random()*4);
+            document.getElementById("alertfield").textContent = "[" + timerNow.toString() + "s] " + BEHAVIOR_TEXT[behavior] + " up!";
+            buffRings(behavior);
+        }
+    } else if (justHit) {
+        justHit = false;
+        document.getElementById("alertfield").textContent = "Game over! (Restarting shortly...)";
+        explosion.x = player.x;
+        explosion.y = player.y;
+        explosionGrowth = 1000;
+        explosion.radius = 1;
+    } else {
+        var timerNow = Math.round((Date.now() - timerEnd)/1000);
+
+        if (explosion.radius > 0) {
+            explosionGrowth -= 3600 * (delta_ms / 1000);
+            explosion.radius += explosionGrowth * delta_ms / 1000;
+            if (explosion.radius < 0) explosion.radius = 0;
+            
+            if (explosion.radius > 60) playerVisible = false;
+        }
+
+        if (timerNow >= 5) {
+            player.x = 250;
+            player.y = 250;
+            bulletRings = [];
+            ringFactories = [];
+            phase = 0;
+            timerStart = Date.now();
+            playerHit = false;
+            playerVisible = true;
+            document.getElementById("alertfield").textContent = "[0s] Starting off simple.";
+        }
+    }    
+    
     render();
 }
 
@@ -707,10 +755,14 @@ function render() {
     bgGridFar.draw();
     bgGridNear.draw();
 
-    if (mouseInField) followLine.draw();
-    player.draw();
-    hurtboxOuter.draw();
-    hurtboxInner.draw();
+    if (playerVisible) {
+        if (mouseInField) followLine.draw();
+        player.draw();
+        hurtboxOuter.draw();
+        hurtboxInner.draw();
+    }
+
+    explosion.draw();
 
     for (var i = 0; i < bulletRings.length; i++) {
         bulletRings[i].draw();
