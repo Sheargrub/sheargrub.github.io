@@ -538,9 +538,13 @@ window.onload = function init() {
     table.init();
 
     floor = new RectPrismObj(0, -1, 0, 3.5, 0.1, 1.5, texCarpet);
+    floor.init();
     wallL = new RectPrismObj(0.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
+    wallL.init();
     wallB = new RectPrismObj(0, 0.5, 4.25, 1.5, 1.5, 0.1, texBrick);
+    wallB.init();
     wallR = new RectPrismObj(0.75, 0.5, 3.5, 0.1, 1.5, 1.5, texBrick);
+    wallR.init();
 
     render();
 
