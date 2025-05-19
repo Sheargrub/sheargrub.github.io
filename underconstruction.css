@@ -15,7 +15,10 @@ h1 {
 }
 
 #centerbox {
-	margin: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 #contentpanel {
@@ -23,8 +26,9 @@ h1 {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 600px;
-	height: 200px;
+	max-width: 600px;
+	min-width: 300px;
+	padding: 30px;
 	background-color: rgb(255, 255, 255);
 	border-radius: 25px;
 	margin: auto;
@@ -34,7 +38,7 @@ h1 {
 }
 
 #textbody {
-	width:500px;
+	max-width:500px;
 }
 
 #socialsbox {
@@ -42,9 +46,10 @@ h1 {
 	flex-direction: row;
 	justify-content: center;
 	align-items: flex-end;
-	width: 600px;
-	height: 70px;
-	margin: auto;
+	max-width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
 }
 
 #socialsicon {
